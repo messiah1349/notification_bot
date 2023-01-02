@@ -1,0 +1,26 @@
+bd_directory: data/
+bd_name: main.db
+
+menu_naming:
+  add_deed: Добавить дело
+  show_deeds: Показать дела
+  yes_: Да
+  no_: Нет
+
+answers_naming:
+  chose_move: Выберите действие
+  this_is_deeds: Вот такие дела
+  deed_name_questions: Как называется дело
+  deed_added: Добавили
+  notification_questions: Нужно напоминание
+  chose_day: Выберите день
+  chose_hour: Выберите час
+  chose_minute: Выберите минуту
+  time_passed: Это время уже прошло :( Попробуйте еще разок
+  notify_added: Добавили! Мы вас уведомим в
+  deed_done: Дело выполнено
+  notification_canceled: Напоминание не придет
+  text_new_deed_name: Введите новое имя
+  deed_renamed: Переименовано
+  dzyn: Дзынь
+  wow: Ура!

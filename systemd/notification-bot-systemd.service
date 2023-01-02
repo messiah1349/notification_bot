@@ -1,0 +1,15 @@
+[Unit]
+
+Description=aaa bot
+After=network-online.target
+
+[Service]
+User=root
+WorkingDirectory=/root/bots/notification_bot
+ExecStart=venv/bin/python main.py
+KillMode=process
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
