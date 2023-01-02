@@ -1,8 +1,8 @@
+import os
 from lib.client import Client
 
 if __name__ == '__main__':
-    token = '5984584058:AAFdEOs1r3PV_Ka8GVfJ2dVHS49KZ_ZmgZQ'
+    API_TOKEN = os.environ["NOTIFICATION_BOT_TOKEN"]
     bd_path = '/data/main.db'
-    client = Client(token, bd_path)
+    client = Client(API_TOKEN, bd_path)
     client.build_application()
-
