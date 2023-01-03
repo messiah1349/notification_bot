@@ -25,7 +25,7 @@ class Deed(Base):
 
 if __name__ == '__main__':
 
-    CONFIG_PATH = ROOT_DIR + '/configs/configs.yaml'
+    CONFIG_PATH = ROOT_DIR + '/configs/config.yaml'
     config = ut.read_config(CONFIG_PATH)
     bd_directory = config['bd_directory']
     bd_name = config['bd_name']
