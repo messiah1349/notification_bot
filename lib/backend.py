@@ -7,7 +7,7 @@ from datetime import datetime
 import logging
 
 from db.deed import Deed
-from config.definitions import ROOT_DIR
+from configs.definitions import ROOT_DIR
 
 logger = logging.getLogger(__name__)
 

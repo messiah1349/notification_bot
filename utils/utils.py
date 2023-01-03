@@ -1,7 +1,7 @@
 import yaml
 import pytz
 from dataclasses import make_dataclass
-from config.definitions import ROOT_DIR
+from configs.definitions import ROOT_DIR
 from datetime import datetime
 
 
@@ -12,7 +12,7 @@ def read_config(config_path: str) -> dict:
     return prime_service
 
 
-CONFIG_PATH = ROOT_DIR + '/config/config.yaml'
+CONFIG_PATH = ROOT_DIR + '/configs/config.yaml'
 config = read_config(CONFIG_PATH)
 
 

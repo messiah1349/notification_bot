@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String, DATETIME, Float
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
 
-from config.definitions import ROOT_DIR
+from configs.definitions import ROOT_DIR
 import utils.utils as ut
 
 Base = declarative_base()
@@ -25,7 +25,7 @@ class Deed(Base):
 
 if __name__ == '__main__':
 
-    CONFIG_PATH = ROOT_DIR + '/config/config.yaml'
+    CONFIG_PATH = ROOT_DIR + '/configs/configs.yaml'
     config = ut.read_config(CONFIG_PATH)
     bd_directory = config['bd_directory']
     bd_name = config['bd_name']
