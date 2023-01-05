@@ -1,0 +1,5 @@
+notification_bot.egg-info
+systemd
+venv
+*log.txt
+test.py
