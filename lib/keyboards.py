@@ -56,9 +56,23 @@ def get_inline_deed_after_notify(deed: 'Deed') -> InlineKeyboardMarkup:
     return reply_markup
 
 
+def get_postpone_minutes() -> list[list[InlineKeyboardButton]]:
+    keyboard = [
+        [
+            InlineKeyboardButton('5min', callback_data='postpone=5'),
+            InlineKeyboardButton('10min', callback_data='postpone=10'),
+            InlineKeyboardButton('30min', callback_data='postpone=30'),
+            InlineKeyboardButton('1hour', callback_data='postpone=60'),
+            InlineKeyboardButton('1day', callback_data='postpone=1440'),
+        ]
+    ]
+
+    return keyboard
+
+
 def get_days() -> InlineKeyboardMarkup:
 
-    keyboard = []
+    keyboard = get_postpone_minutes()
     current_time = ut.localize(datetime.now())
     days = [current_time + timedelta(days=day_add) for day_add in range(9)]
     showed_days = [ut.repr_date(day) for day in days]

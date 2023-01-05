@@ -13,7 +13,7 @@ answers_naming:
   deed_name_questions: Как называется дело
   deed_added: Добавили
   notification_questions: Нужно напоминание
-  chose_day: Выберите день
+  chose_day: На сколько отложить? Или выберите день
   chose_hour: Выберите час
   chose_minute: Выберите минуту
   time_passed: Это время уже прошло :( Попробуйте еще разок
