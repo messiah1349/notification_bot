@@ -14,4 +14,6 @@ ENV NOTIFICATION_BOT_TOKEN=$NOTIFICATION_BOT_TOKEN
 
 ENV PYTHONPATH=/code/
 
+RUN python /code/db/deed.py
+
 CMD ["python", "/code/main.py"]
