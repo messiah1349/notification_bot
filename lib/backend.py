@@ -1,12 +1,13 @@
+import sqlalchemy.engine
 from sqlalchemy import create_engine, insert, func
-from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import scoped_session, Session
 from sqlalchemy.orm import sessionmaker
 from dataclasses import dataclass
 from typing import Any
 from datetime import datetime
 import logging
 
-from db.deed import Deed
+from deed import Deed
 from configs.definitions import ROOT_DIR
 
 logger = logging.getLogger(__name__)
@@ -23,15 +24,10 @@ def db_executor(func):
     """create and close sqlalchemy session for class methods which execute sql statement"""
     def inner(*args, **kwargs):
         self_ = args[0]
-        session = self_.Session()
-        try:
-            func(*args, **kwargs)
+
+        with Session(self_.engine) as session:
+            func(*args, **kwargs, session=session)
             session.commit()
-        except:
-            session.rollback()
-            raise
-        finally:
-            self_.Session.remove()
     return inner
 
 
@@ -39,15 +35,10 @@ def db_selector(func):
     """create and close sqlalchemy session for class methods which return query result"""
     def inner(*args, **kwargs):
         self_ = args[0]
-        session = self_.Session()
-        try:
-            func_res = func(*args, **kwargs)
-        except:
-            session.rollback()
-            raise
-        finally:
-            self_.Session.remove()
-            return func_res
+
+        with Session(self_.engine) as session:
+            result = func(*args, **kwargs, session=session)
+            return result
     return inner
 
 
@@ -55,30 +46,27 @@ class TableProcessor:
 
     def __init__(self, engine):
         session_factory = sessionmaker(bind=engine)
+        self.engine = engine
         self.Session = scoped_session(session_factory)
 
     @db_selector
-    def get_query_result(self, query: "sqlalchemy.orm.query.Query") -> list["table_model"]:
-        session = self.Session()
+    def get_query_result(self, query: "sqlalchemy.orm.query.Query", session=None) -> list["table_model"]:
         result = session.execute(query).scalars().all()
         return result
 
     @db_executor
-    def _insert_values(self, table_model: "sqlalchemy.orm.decl_api.DeclarativeMeta", data: dict) -> Response:
+    def _insert_values(self, table_model: "sqlalchemy.orm.decl_api.DeclarativeMeta", data: dict, session=None) -> None:
         ins_command = insert(table_model).values(**data)
-        session = self.Session()
         session.execute(ins_command)
 
     @db_selector
-    def _get_all_data(self, table_model: "sqlalchemy.orm.decl_api.DeclarativeMeta") -> list['table_model']:
-        session = self.Session()
+    def _get_all_data(self, table_model: "sqlalchemy.orm.decl_api.DeclarativeMeta", session=None) -> list['table_model']:
         query = session.query(table_model)
         result = self.get_query_result(query)
         return result
 
     @db_selector
-    def _get_filtered_data(self, table_model, filter_values: dict) -> list['table_model']:
-        session = self.Session()
+    def _get_filtered_data(self, table_model, filter_values: dict, session=None) -> list['table_model']:
         query = session.query(table_model)
         for filter_column in filter_values:
             query = query.filter(getattr(table_model, filter_column) == filter_values[filter_column])
@@ -86,15 +74,14 @@ class TableProcessor:
         return result
 
     @db_executor
-    def _change_column_value(self, table_model, filter_values: dict, change_values: dict) -> None:
-        session = self.Session()
+    def _change_column_value(self, table_model, filter_values: dict, change_values: dict, session=None) -> None:
         query = session.query(table_model)
         for filter_column in filter_values:
             query = query.filter(getattr(table_model, filter_column) == filter_values[filter_column])
         query.update(change_values)
 
     @db_selector
-    def _get_max_value_of_column(self, table_model, column: str):
+    def _get_max_value_of_column(self, table_model, column: str, session=None):
 
         query = func.max(getattr(table_model, column))
         result = self.get_query_result(query)[0]
@@ -212,9 +199,7 @@ class DeedProcessor(TableProcessor):
 
 class Backend:
 
-    def __init__(self, db_path: str):
-        data_base_uri = f"sqlite:///{ROOT_DIR}/{db_path}"
-        engine = create_engine(data_base_uri, echo=False, connect_args={"check_same_thread": False})
+    def __init__(self, engine: sqlalchemy.engine.base.Engine):
         self.deed_processor = DeedProcessor(engine)
 
     def add_deed(self, deed_name: str, telegram_id: int) -> Response:
@@ -237,3 +222,25 @@ class Backend:
 
     def get_deed(self, deed_id) -> Response:
         return self.deed_processor.get_deed_by_id(deed_id)
+
+
+
+
+# @db_selector
+def test(engine):
+    # session_factory = sessionmaker(bind=engine)
+    # Session = scoped_session(session_factory)
+
+    # session = Session(engine)
+    #
+    # query = session.query(Deed)
+    #
+    # result = session.execute(query).scalars().all()
+    #
+    # session.close()
+
+    with Session(engine) as session:
+        query = session.query(Deed)
+        result = session.execute(query).scalars().all()
+
+    return result

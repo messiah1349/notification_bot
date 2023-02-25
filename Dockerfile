@@ -11,9 +11,8 @@ RUN pip install -r requirements.txt
 COPY . .
 
 ENV NOTIFICATION_BOT_TOKEN=$NOTIFICATION_BOT_TOKEN
-
 ENV PYTHONPATH=/code/
 
-RUN python /code/db/deed.py
+RUN python deed.py
 
 CMD ["python", "/code/main.py"]
