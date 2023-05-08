@@ -1,10 +1,13 @@
 import os
-from sqlalchemy import create_engine, Column, Integer, String, DATETIME, Float
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
+import logging
 
 from configs.definitions import ROOT_DIR
 import utils.utils as ut
+
+logger = logging.getLogger(__name__)
 
 Base = declarative_base()
 
@@ -15,12 +18,23 @@ class Deed(Base):
     id = Column(Integer, primary_key=True)
     telegram_id = Column(Integer)
     name = Column(String)
-    create_time = Column(DATETIME)
-    notify_time = Column(DATETIME)
-    done_flag = Column(Integer)
+    create_time = Column(DateTime)
+    notify_time = Column(DateTime)
+    done_flag = Column(Boolean)
 
-    # def __repr__(self):
-    #     return self.name + ' ' + str(self.telegram_id)
+
+def get_engine(postgres_password: str, postgres_port:str, postgres_host:str):
+    url = f'postgresql+psycopg2://postgres:{postgres_password}@{postgres_host}:{postgres_port}/notification_bot'
+    postgres_engine = create_engine(url)
+    return postgres_engine
+
+
+def create_data_base_and_tables(engine):
+
+    if not database_exists(engine.url):
+        create_database(engine.url)
+        logger.info(f"database was created, url={engine.url}")
+    Base.metadata.create_all(engine)
 
 
 if __name__ == '__main__':

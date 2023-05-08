@@ -34,8 +34,8 @@ class Client:
         PROCESS_RENAME_DEED_NAME: int
         PROCESS_TIME: int
 
-    def __init__(self, token: str, bd_path: str):
-        self.backend = Backend(bd_path)
+    def __init__(self, token: str, engine):
+        self.backend = Backend(engine)
         self.application = Application.builder().token(token).build()
         self.states = self.get_states()
 
@@ -329,6 +329,7 @@ class Client:
 
     def initialize_notifications(self):
         response = self.backend.get_active_deeds()
+        print(response)
         deeds = response.answer
 
         for deed in deeds:
