@@ -38,6 +38,7 @@ class Client:
         self.backend = Backend(engine)
         self.application = Application.builder().token(token).build()
         self.states = self.get_states()
+        logger.info('engine was passed')
 
     def get_states(self):
         states = self.States(*range(6))
@@ -166,6 +167,8 @@ class Client:
         context.job_queue.run_once(self.notification, when=notification_time, user_id=user_id,
                                    data=str(deed_id), name=str(deed_id))
         logger.info(f'add job: {notification_time=}, {user_id=}, {deed_id=}')
+
+        # localized_notification_time = ut.localize(notification_time)
         response = self.backend.add_notification(deed_id, notification_time)
 
         markup = kb.dzyn_keyboard()
@@ -242,7 +245,7 @@ class Client:
 
         text = deed.name
         if deed.notify_time:
-            text = text + f'\n🔔- {ut.repr_date(deed.notify_time, time_=True)}'
+            text = text + f'\n🔔- {ut.repr_date(ut.localize(deed.notify_time), time_=True)}'
 
         await query.message.reply_text(
             text,
@@ -328,13 +331,17 @@ class Client:
         return self.states.MAIN_MENU_CHOSE
 
     def initialize_notifications(self):
+        logger.info('move to all active deeds')
         response = self.backend.get_active_deeds()
-        print(response)
+        logger.info('passed to all active deeds')
+        # print(response)
         deeds = response.answer
 
         for deed in deeds:
-            notification_time = ut.localize(deed.notify_time)
+            # notification_time = ut.localize(deed.notify_time)
+            notification_time = deed.notify_time
             if notification_time < ut.localize(datetime.now()):
+                # if notification_time < datetime.now():
                 continue
             user_id = deed.telegram_id
             deed_id = deed.id
@@ -382,6 +389,7 @@ class Client:
         return conv_handler
 
     def build_application(self):
+        logger.info('start to initialize app')
         self.initialize_notifications()
         conv_handler = self.build_conversation_handler()
         self.application.add_handler(conv_handler)

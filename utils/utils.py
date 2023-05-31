@@ -1,5 +1,6 @@
 import yaml
 import pytz
+import os
 from dataclasses import make_dataclass
 from configs.definitions import ROOT_DIR
 from datetime import datetime
@@ -36,8 +37,11 @@ def name_to_reg(name: str) -> str:
     return f"^{name}$"
 
 
-def localize(datetime_: datetime, timezone='Asia/Yerevan'):
-    return pytz.timezone(timezone).localize(datetime_)
+def localize(datetime_: datetime):
+    timezone_ = os.getenv('TZ', None)
+    tz = pytz.timezone(timezone_)
+    datetime_.astimezone(tz)
+    return datetime_.astimezone(tz)
 
 
 def repr_date(datetime_: datetime, time_: bool = False) -> str:

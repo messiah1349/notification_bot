@@ -6,7 +6,7 @@ from typing import Any
 from datetime import datetime
 import logging
 
-from db.deed import Deed
+from lib.db.deed import Deed
 from configs.definitions import ROOT_DIR
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,9 @@ class TableProcessor:
 
     @db_selector
     def get_query_result(self, query: "sqlalchemy.orm.query.Query", session=None) -> list["table_model"]:
+        logger.error('inside get query result 1')
         result = session.execute(query).scalars().all()
+        logger.error('inside get query result 2')
         return result
 
     @db_executor
@@ -67,10 +69,14 @@ class TableProcessor:
 
     @db_selector
     def _get_filtered_data(self, table_model, filter_values: dict, session=None) -> list['table_model']:
+        logger.error('inside selector')
         query = session.query(table_model)
+        logger.error('inside selector2')
         for filter_column in filter_values:
             query = query.filter(getattr(table_model, filter_column) == filter_values[filter_column])
+        logger.error('inside selector3')
         result = self.get_query_result(query)
+        logger.error('inside selector4')
         return result
 
     @db_executor
@@ -123,6 +129,7 @@ class DeedProcessor(TableProcessor):
             'done_flag': False
         }
         try:
+            logger.error('try to get data')
             deeds = self._get_filtered_data(self.table_model, filter_values)
             active_deeds = [deed for deed in deeds if deed.notify_time]
             logger.info(f"all active deeds was passed")
