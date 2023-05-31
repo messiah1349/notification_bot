@@ -11,7 +11,8 @@ start_keyboard_options = [
 
 
 def process_deeds(deed: 'Deed') -> str:
-    notify_emoji = '🔔 ' if deed.notify_time and ut.localize(deed.notify_time) > ut.localize(datetime.now()) else ''
+    # notify_emoji = '🔔 ' if deed.notify_time and ut.localize(deed.notify_time) > ut.localize(datetime.now()) else ''
+    notify_emoji = '🔔 ' if deed.notify_time and deed.notify_time > ut.localize(datetime.now()) else ''
     return notify_emoji + deed.name
 
 
@@ -73,7 +74,8 @@ def get_postpone_minutes() -> list[list[InlineKeyboardButton]]:
 def get_days() -> InlineKeyboardMarkup:
 
     keyboard = get_postpone_minutes()
-    current_time = ut.localize(datetime.now())
+    # current_time = ut.localize(datetime.now())
+    current_time = datetime.now()
     days = [current_time + timedelta(days=day_add) for day_add in range(9)]
     showed_days = [ut.repr_date(day) for day in days]
     for ix, day in enumerate(showed_days):
